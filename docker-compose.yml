@@ -1,0 +1,15 @@
+services:
+  mock-service:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: mock-service
+    container_name: mock-service
+    environment:
+      SECRET_KEY: "${SECRET_KEY:-test}"
+    command: [
+      "mock-service",
+    ]
+
+networks:
+  guest:
