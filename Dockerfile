@@ -37,7 +37,8 @@ ARG TARGETOS
 
 WORKDIR /
 COPY --from=build-image /build/target/mock-service /build/LICENSE /
+COPY --from=build-image /build/payloads/ /payloads/
 
 USER nonroot:nonroot
 
-ENTRYPOINT ["/mock-serivce"]
+ENTRYPOINT ["/mock-service"]
