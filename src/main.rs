@@ -1,13 +1,14 @@
+mod payloads;
+
+use crate::payloads::load_payloads;
 use axum::{
-    routing::get,
     Router,
-    Json,
-    response::IntoResponse,
-    extract::State,
+    extract::{Request, State},
+    http::{HeaderMap, HeaderValue, StatusCode, header},
+    response::{IntoResponse, Response},
 };
-use serde_json::Value;
-use std::{error::Error, sync::Arc};
-use tokio::fs;
+use std::collections::HashMap;
+use std::error::Error;
 
 #[global_allocator]
 static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
@@ -15,38 +16,57 @@ static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 // Shared state that holds the preloaded JSON
 #[derive(Clone)]
 struct AppState {
-    json_data: Arc<Value>,
+    payloads: HashMap<String, HashMap<String, Vec<u8>>>,
 }
 
-async fn serve_json(State(state): State<AppState>) -> impl IntoResponse {
-    Json(state.json_data.as_ref().clone())
+async fn serve_mock(State(state): State<AppState>, req: Request) -> Response {
+    let method = req.method().as_str().to_lowercase();
+    let uri = req.uri().path().to_lowercase();
+
+    // Try to find the payload
+    let payload = state
+        .payloads
+        .get(&method)
+        .and_then(
+            |method_endpoints|
+                method_endpoints.get(&uri)
+        );
+
+    match payload {
+        Some(data) => {
+            let mut headers = HeaderMap::new();
+            headers.insert(
+                header::CONTENT_TYPE,
+                HeaderValue::from_static("application/json"),
+            );
+
+            (StatusCode::OK, headers, data.clone()).into_response()
+        }
+        None => (StatusCode::NOT_FOUND, "Mock not found").into_response(),
+    }
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    // Preload JSON once at startup
-    let json_content = fs::read_to_string("payloads/00001.json")
-        .await
-        .expect("Failed to read JSON file");
+    let payloads = load_payloads().await;
 
-    let json_value: Value = serde_json::from_str(&json_content)
-        .expect("Failed to parse JSON");
+    println!("Loaded payloads:");
+    for (method, paths) in &payloads {
+        println!("  {}: {} endpoints", method.to_uppercase(), paths.len());
+        for path in paths.keys() {
+            println!("    {path}");
+        }
+    }
 
-    // Wrap in Arc for efficient sharing across requests
-    let state = AppState {
-        json_data: Arc::new(json_value),
-    };
+    let state = AppState { payloads };
 
-    // Build the router with shared state
-    let app = Router::new()
-        .route("/api/mock/00001", get(serve_json))
-        .with_state(state);
+    // Build the router with a catch-all route
+    let app = Router::new().fallback(serve_mock).with_state(state);
 
     // Start the server
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:8000")
-        .await?;
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:8000").await?;
 
-    println!("Server running on http://0.0.0.0:8000");
+    println!("\nServer running on http://0.0.0.0:8000");
 
     axum::serve(listener, app).await?;
 
