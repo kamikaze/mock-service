@@ -9,9 +9,8 @@ pub async fn load_payloads() -> HashMap<String, HashMap<String, Vec<u8>>> {
     let mut result = HashMap::new();
 
     // Read the top-level directory (get, post, put, etc.)
-    let mut entries = match fs::read_dir(dir_path).await {
-        Ok(entries) => entries,
-        Err(_) => return result,
+    let Ok(mut entries) = fs::read_dir(dir_path).await else {
+        return result;
     };
 
     while let Ok(Some(entry)) = entries.next_entry().await {

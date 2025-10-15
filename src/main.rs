@@ -27,10 +27,7 @@ async fn serve_mock(State(state): State<AppState>, req: Request) -> Response {
     let payload = state
         .payloads
         .get(&method)
-        .and_then(
-            |method_endpoints|
-                method_endpoints.get(&uri)
-        );
+        .and_then(|method_endpoints| method_endpoints.get(&uri));
 
     match payload {
         Some(data) => {
