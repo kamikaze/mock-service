@@ -6,6 +6,7 @@ use axum::{
     extract::{Request, State},
     http::{HeaderMap, HeaderValue, StatusCode, header},
     response::{IntoResponse, Response},
+    routing::get,
 };
 use std::collections::HashMap;
 use std::error::Error;
@@ -19,6 +20,14 @@ struct AppState {
     payloads: HashMap<String, HashMap<String, Vec<u8>>>,
 }
 
+async fn health() -> impl IntoResponse {
+    StatusCode::OK
+}
+
+async fn ready() -> impl IntoResponse {
+    StatusCode::OK
+}
+
 async fn serve_mock(State(state): State<AppState>, req: Request) -> Response {
     let method = req.method().as_str().to_lowercase();
     let uri = req.uri().path().to_lowercase();
@@ -27,7 +36,7 @@ async fn serve_mock(State(state): State<AppState>, req: Request) -> Response {
     let payload = state
         .payloads
         .get(&method)
-        .and_then(|method_endpoints| method_endpoints.get(&uri));
+        .and_then(|method_map| method_map.get(uri.as_str()));
 
     match payload {
         Some(data) => {
@@ -57,13 +66,20 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let state = AppState { payloads };
 
-    // Build the router with a catch-all route
-    let app = Router::new().fallback(serve_mock).with_state(state);
+    // Build the router with health check endpoints and catch-all route
+    let app = Router::new()
+        .route("/health", get(health))
+        .route("/ready", get(ready))
+        .fallback(serve_mock)
+        .with_state(state);
 
     // Start the server
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8000").await?;
 
     println!("\nServer running on http://0.0.0.0:8000");
+    println!("Health checks:");
+    println!("  GET /health - Liveness probe");
+    println!("  GET /ready   - Readiness probe");
 
     axum::serve(listener, app).await?;
 
