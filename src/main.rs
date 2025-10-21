@@ -74,9 +74,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .with_state(state);
 
     // Start the server
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:8000").await?;
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await?;
 
-    println!("\nServer running on http://0.0.0.0:8000");
+    println!("\nServer running on http://0.0.0.0:8080");
     println!("Health checks:");
     println!("  GET /health - Liveness probe");
     println!("  GET /ready   - Readiness probe");
