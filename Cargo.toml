@@ -1,12 +1,12 @@
 [package]
 name = "mock-service"
-version = "0.0.4"
+version = "0.0.5"
 edition = "2024"
 
 [dependencies]
 mimalloc = { version = "0.1.48", features = ["extended"] }
 tokio = { version = "1.48.0", features = ["rt", "rt-multi-thread", "macros", "fs"] }
-axum = "0.8.6"
+axum = "0.8.7"
 
 [profile.release]
 opt-level = "z"
