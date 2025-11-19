@@ -2,17 +2,14 @@ mod payloads;
 
 use crate::payloads::load_payloads;
 use axum::{
-    Router,
     extract::{Request, State},
-    http::{HeaderMap, HeaderValue, StatusCode, header},
+    http::{header, HeaderMap, HeaderValue, StatusCode},
     response::{IntoResponse, Response},
     routing::get,
+    Router,
 };
 use std::collections::HashMap;
 use std::error::Error;
-
-#[global_allocator]
-static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 // Shared state that holds the preloaded JSON
 #[derive(Clone)]
