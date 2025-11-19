@@ -2,11 +2,11 @@ mod payloads;
 
 use crate::payloads::load_payloads;
 use axum::{
+    Router,
     extract::{Request, State},
-    http::{header, HeaderMap, HeaderValue, StatusCode},
+    http::{HeaderMap, HeaderValue, StatusCode, header},
     response::{IntoResponse, Response},
     routing::get,
-    Router,
 };
 use std::collections::HashMap;
 use std::error::Error;
