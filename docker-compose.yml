@@ -2,7 +2,7 @@ services:
   mock-service:
     build:
       context: ./
-      dockerfile: Dockerfile
+      dockerfile: Containerfile
     image: mock-service
     container_name: mock-service
     environment:
