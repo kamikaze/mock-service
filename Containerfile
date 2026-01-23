@@ -40,5 +40,5 @@ COPY --from=build-image /build/target/mock-service /build/LICENSE /
 
 USER nonroot:nonroot
 
-EXPOSE 8000
+EXPOSE 8080
 ENTRYPOINT ["/mock-service"]

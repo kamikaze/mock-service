@@ -6,8 +6,10 @@ services:
     image: localhost/mock-service
     environment:
       SECRET_KEY: "${SECRET_KEY:-test}"
+    volumes:
+      - ./payloads:/payloads
     ports:
-      - "8000:8000"
+      - "8080:8080"
     networks:
       common:
         aliases:
