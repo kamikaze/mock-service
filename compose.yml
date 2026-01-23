@@ -3,12 +3,16 @@ services:
     build:
       context: ./
       dockerfile: Containerfile
-    image: mock-service
-    container_name: mock-service
+    image: localhost/mock-service
     environment:
       SECRET_KEY: "${SECRET_KEY:-test}"
     ports:
       - "8000:8000"
+    networks:
+      common:
+        aliases:
+          - mock-service
 
 networks:
-  guest:
+  common:
+    driver: bridge

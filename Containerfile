@@ -1,8 +1,8 @@
-FROM --platform=$TARGETOS/$TARGETARCH rust:1.92-slim-trixie AS build-image
+FROM --platform=$TARGETOS/$TARGETARCH rust:1.93-slim-trixie AS build-image
 LABEL org.opencontainers.image.description="Mock service"
 LABEL authors="Olegs Korsaks"
 
-ARG upx_version=5.0.2
+ARG upx_version=5.1.0
 ARG TARGETARCH
 ARG TARGETOS
 
@@ -40,4 +40,5 @@ COPY --from=build-image /build/target/mock-service /build/LICENSE /
 
 USER nonroot:nonroot
 
+EXPOSE 8000
 ENTRYPOINT ["/mock-service"]
