@@ -1,10 +1,10 @@
 [package]
 name = "mock-service"
-version = "0.0.10"
+version = "0.0.11"
 edition = "2024"
 
 [dependencies]
-tokio = { version = "1.50.0", features = ["rt", "rt-multi-thread", "macros", "fs"] }
+tokio = { version = "1.51.0", features = ["rt", "rt-multi-thread", "macros", "fs"] }
 axum = "0.8.8"
 
 [profile.release]
