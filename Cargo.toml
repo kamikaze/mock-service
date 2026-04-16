@@ -1,11 +1,11 @@
 [package]
 name = "mock-service"
-version = "0.0.11"
+version = "0.0.12"
 edition = "2024"
 
 [dependencies]
-tokio = { version = "1.51.0", features = ["rt", "rt-multi-thread", "macros", "fs"] }
-axum = "0.8.8"
+tokio = { version = "1.52.0", features = ["rt", "rt-multi-thread", "macros", "fs"] }
+axum = "0.8.9"
 
 [profile.release]
 codegen-units = 1
