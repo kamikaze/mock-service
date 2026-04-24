@@ -2,7 +2,7 @@ FROM --platform=$TARGETOS/$TARGETARCH rust:1.95-slim-trixie AS build-image
 LABEL org.opencontainers.image.description="Mock service"
 LABEL authors="Olegs Korsaks"
 
-ARG upx_version=5.1.0
+ARG upx_version=5.1.1
 ARG TARGETARCH
 ARG TARGETOS
 
